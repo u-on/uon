@@ -1,11 +1,7 @@
 package uon
 
 import (
-	"bytes"
 	"fmt"
-	"golang.org/x/text/encoding/simplifiedchinese"
-	"golang.org/x/text/transform"
-	"io"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -32,22 +28,6 @@ func PauseExit() {
 // Sleep 延迟 单位ms
 func Sleep(ms int) {
 	time.Sleep(time.Duration(ms) * time.Millisecond)
-}
-
-func Utf8ToGbk(text string) string {
-	r := bytes.NewReader([]byte(text))
-	decoder := transform.NewReader(r, simplifiedchinese.GBK.NewDecoder()) //GB18030
-	content, _ := io.ReadAll(decoder)
-	return string(content)
-}
-
-func GbkToUtf8(b []byte) []byte {
-	tfr := transform.NewReader(bytes.NewReader(b), simplifiedchinese.GBK.NewDecoder())
-	d, e := io.ReadAll(tfr)
-	if e != nil {
-		return nil
-	}
-	return d
 }
 
 // SelfDir 获取程序自身所在目录 不含\
