@@ -1,4 +1,4 @@
-module github
+module github.com/u-on/uon/github
 
 go 1.20
 

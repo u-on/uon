@@ -1,4 +1,4 @@
-module runcmd
+module github.com/u-on/uon/runcmd
 
 go 1.20
 
