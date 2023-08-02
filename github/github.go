@@ -10,7 +10,7 @@ import (
 )
 
 type GithubInfo struct {
-	Releases gjson.Result
+	Releases []string //ads        gjson.Result
 	Tag      string
 }
 
@@ -31,7 +31,17 @@ func GetReleasesInfo(rep string) (GithubInfo, error) {
 	// 获取所有下载地址 https://api.github.com/repos/?/?/releases/latest
 	result := gjson.Get(string(body), "assets.#.browser_download_url")
 
-	rt.Releases = result
+	array := result.Array()
+
+	// 创建一个字符串切片
+	strSlice := make([]string, len(array))
+
+	// 遍历JSON数组并将元素转换为字符串
+	for i, element := range array {
+		strSlice[i] = element.String()
+	}
+
+	rt.Releases = strSlice
 	ghTag := gjson.Get(string(body), "tag_name").String()
 	rt.Tag = ghTag
 
@@ -47,15 +57,18 @@ func GetReleasesEx(rep string, Ex string) (string, error) {
 		return "", errors.New("error")
 	}
 
-	for _, name := range t.Releases.Array() {
-		result, err := regexp.MatchString(Ex, name.String())
+	// 使用for循环遍历字符串数组
+	for i := 0; i < len(t.Releases); i++ {
+		result, err := regexp.MatchString(Ex, t.Releases[i])
 		if err != nil {
 			fmt.Println(err.Error())
 		}
 		if result {
-			return name.String(), nil
+			return t.Releases[i], nil
 			//fmt.Printf("%s matches\n", tt)
 		}
+
 	}
+
 	return "", errors.New("null")
 }
