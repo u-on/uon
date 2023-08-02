@@ -1,4 +1,6 @@
 github.com/u-on/uon/conver v0.0.0-20230801021718-dd8a09304d69 h1:l+o7PnzbMz3iuumT7dvRnddf2R2k5kEEDrG0WYJioUY=
 github.com/u-on/uon/conver v0.0.0-20230801021718-dd8a09304d69/go.mod h1:tXh9m7CbgFG5NeaN1RZx0Td+4oJAmpZIOioDunZ8vTk=
+github.com/u-on/uon/conver v0.0.0-20230802024118-c5c073dddab4 h1:PVrOUqaQ4HYjQ4WB5WePA8jHyGKpmWovJVYApBqBbz8=
+github.com/u-on/uon/conver v0.0.0-20230802024118-c5c073dddab4/go.mod h1:tXh9m7CbgFG5NeaN1RZx0Td+4oJAmpZIOioDunZ8vTk=
 golang.org/x/text v0.11.0 h1:LAntKIrcmeSKERyiOh0XMV39LXS8IE9UL2yP7+f5ij4=
 golang.org/x/text v0.11.0/go.mod h1:TvPlkZtksWOMsz7fbANvkp4WM8x/WCo/om8BMLbz+aE=
