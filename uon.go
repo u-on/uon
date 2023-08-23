@@ -2,6 +2,7 @@ package uon
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -95,4 +96,24 @@ func GetAllFile(pathname string) ([]string, error) {
 	}
 
 	return result, nil
+}
+
+// ReadFileToStr
+// @description: 返回文件内容str
+// @param {string} filepath - 文件路径
+// @return {string} - 读取的字符串
+func ReadFileToStr(filepath string) (string, error) {
+	f, err := os.Open(filepath)
+	if err != nil {
+
+		return "", err
+	}
+	defer f.Close()
+
+	fd, err := io.ReadAll(f)
+	if err != nil {
+		return "", err
+	}
+
+	return string(fd), nil
 }
