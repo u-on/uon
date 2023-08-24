@@ -110,10 +110,24 @@ func ReadFileToStr(filepath string) (string, error) {
 	}
 	defer f.Close()
 
-	fd, err := io.ReadAll(f)
+	rt, err := io.ReadAll(f)
 	if err != nil {
 		return "", err
 	}
 
-	return string(fd), nil
+	return string(rt), nil
+}
+
+// WriteStringToFile
+// @description: 写入文件
+// @param {string} str - 写入的字符串
+// @param {string} fileName - 文件名
+// @return {error} - 返回
+func WriteStringToFile(str string, fileName string) error {
+	var data = []byte(str)
+	err := os.WriteFile(fileName, data, 0666)
+	if err != nil {
+		return err
+	}
+	return nil
 }
