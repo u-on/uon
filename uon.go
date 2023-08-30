@@ -99,7 +99,7 @@ func GetAllFile(pathname string) ([]string, error) {
 }
 
 // ReadFileToStr
-// @description: 返回文件内容str
+// @description: 读取文件内容str
 // @param {string} filepath - 文件路径
 // @return {string} - 读取的字符串
 func ReadFileToStr(filepath string) (string, error) {
@@ -119,7 +119,7 @@ func ReadFileToStr(filepath string) (string, error) {
 }
 
 // WriteStringToFile
-// @description: 写入文件
+// @description: 写入
 // @param {string} str - 写入的字符串
 // @param {string} fileName - 文件名
 // @return {error} - 返回
