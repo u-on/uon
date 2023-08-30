@@ -150,6 +150,7 @@ func DownloadX(url string, savepath string, numWorkers int) error {
 // 下载指定区间的文件数据，并写入文件中
 func _download(start, end int, file *os.File, bar *progressbar.ProgressBar, url string) {
 	req, err := http.NewRequest("GET", url, nil)
+	req.Header.Set("User-Agent", UserAgent)
 	if err != nil {
 		fmt.Println(err)
 		return
