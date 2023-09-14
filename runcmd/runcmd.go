@@ -30,9 +30,7 @@ func RunCommand(cmd string, args ...string) error {
 		defer wg.Done()
 		reader := bufio.NewReader(stdout)
 		for {
-			// 其实这段去掉程序也会正常运行，只是我们就不知道到底什么时候Command被停止了，而且如果我们需要实时给web端展示输出的话，这里可以作为依据 取消展示
 			select {
-			// 检测到ctx.Done()之后停止读取
 			case <-ctx.Done():
 				if ctx.Err() != nil {
 					fmt.Printf("error: %q", ctx.Err()) //程序出现错误
@@ -55,7 +53,6 @@ func RunCommand(cmd string, args ...string) error {
 	err = c.Start()
 	wg.Wait()
 	return err
-
 }
 
 // RunCommand2 实时显示

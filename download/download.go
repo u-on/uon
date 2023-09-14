@@ -7,6 +7,7 @@ import (
 	"github.com/schollz/progressbar/v3"
 	"github.com/u-on/uon"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -73,12 +74,11 @@ func Download(url string, savepath string) error {
 }
 
 func DownloadX(url string, savepath string, numWorkers int) error {
-
 	_path, _name := filepath.Split(savepath)
-
 	if dd, _ := uon.PathExists(_path); dd == false {
 		err := os.MkdirAll(_path, 0777)
 		if err != nil {
+			log.Println(err)
 			return err
 		}
 	}
@@ -89,17 +89,16 @@ func DownloadX(url string, savepath string, numWorkers int) error {
 
 	resp, err := http.Head(url)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return err
 	}
 	defer resp.Body.Close()
 
 	size, _ := strconv.Atoi(resp.Header.Get("Content-Length"))
 
-	// 创建文件
 	file, err := os.Create(savepath)
 	if err != nil {
-
+		log.Println(err)
 		return err
 	}
 	defer file.Close()
@@ -108,7 +107,6 @@ func DownloadX(url string, savepath string, numWorkers int) error {
 		progressbar.OptionSetWriter(ansi.NewAnsiStdout()),
 		progressbar.OptionEnableColorCodes(true),
 		progressbar.OptionShowBytes(true),
-		//progressbar.OptionSetWidth(55),
 		progressbar.OptionFullWidth(),
 		progressbar.OptionSetDescription("[ "+_name+" ]:"),
 		progressbar.OptionSetTheme(progressbar.Theme{
@@ -120,7 +118,6 @@ func DownloadX(url string, savepath string, numWorkers int) error {
 		}),
 	)
 
-	// 开始下载
 	start := 0
 	partSize := size / numWorkers
 	var wg sync.WaitGroup
@@ -130,7 +127,6 @@ func DownloadX(url string, savepath string, numWorkers int) error {
 			end = size
 		}
 
-		// 开启一个协程下载一部分文件
 		wg.Add(1)
 		go func(start, end int) {
 			defer wg.Done()
@@ -140,26 +136,23 @@ func DownloadX(url string, savepath string, numWorkers int) error {
 		start = end + 1
 	}
 
-	// 等待所有协程结束
 	wg.Wait()
 
 	return nil
-
 }
 
-// 下载指定区间的文件数据，并写入文件中
 func _download(start, end int, file *os.File, bar *progressbar.ProgressBar, url string) {
 	req, err := http.NewRequest("GET", url, nil)
-	req.Header.Set("User-Agent", UserAgent)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
+	req.Header.Set("User-Agent", UserAgent)
 	req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", start, end))
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	defer resp.Body.Close()
@@ -169,13 +162,13 @@ func _download(start, end int, file *os.File, bar *progressbar.ProgressBar, url 
 		n, err := resp.Body.Read(buf)
 		if err != nil {
 			if err != io.EOF {
-				fmt.Println(err)
+				log.Println(err)
 			}
 			break
 		}
 
 		file.WriteAt(buf[:n], int64(start))
-		start += n
 		bar.Add(n)
+		start += n
 	}
 }

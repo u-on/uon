@@ -2,7 +2,6 @@ package uon
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -53,12 +52,8 @@ func PathExists(path string) (bool, error) {
 
 // IsDir 判断所给路径是否为文件夹
 func IsDir(path string) bool {
-	s, err := os.Stat(path)
-	if err != nil {
-
-		return false
-	}
-	return s.IsDir()
+	s, _ := os.Stat(path)
+	return s != nil && s.IsDir()
 
 }
 
@@ -75,21 +70,19 @@ func GetAllFile(pathname string) ([]string, error) {
 
 	fis, err := os.ReadDir(pathname)
 	if err != nil {
-		fmt.Printf("读取文件目录失败，pathname=%v, err=%v \n", pathname, err)
+		//fmt.Printf("读取文件目录失败，pathname=%v, err=%v \n", pathname, err)
 		return result, err
 	}
 
-	// 所有文件/文件夹
 	for _, fi := range fis {
 		fullname := pathname + "/" + fi.Name()
-		// 是文件夹则递归进入获取;是文件，则压入数组
 		if fi.IsDir() {
-			temp, err := GetAllFile(fullname)
+			// 使用递归获取子目录下的文件
+			subResult, err := GetAllFile(fullname)
 			if err != nil {
-				//fmt.Printf("读取文件目录失败,fullname=%v, err=%v", fullname, err)
 				return result, err
 			}
-			result = append(result, temp...)
+			result = append(result, subResult...)
 		} else {
 			result = append(result, fullname)
 		}
@@ -103,19 +96,11 @@ func GetAllFile(pathname string) ([]string, error) {
 // @param {string} filepath - 文件路径
 // @return {string} - 读取的字符串
 func ReadFileToStr(filepath string) (string, error) {
-	f, err := os.Open(filepath)
-	if err != nil {
-
-		return "", err
-	}
-	defer f.Close()
-
-	rt, err := io.ReadAll(f)
+	data, err := os.ReadFile(filepath)
 	if err != nil {
 		return "", err
 	}
-
-	return string(rt), nil
+	return string(data), nil
 }
 
 // WriteStringToFile
@@ -124,10 +109,6 @@ func ReadFileToStr(filepath string) (string, error) {
 // @param {string} fileName - 文件名
 // @return {error} - 返回
 func WriteStringToFile(str string, fileName string) error {
-	var data = []byte(str)
-	err := os.WriteFile(fileName, data, 0666)
-	if err != nil {
-		return err
-	}
-	return nil
+	err := os.WriteFile(fileName, []byte(str), 0666)
+	return err
 }
