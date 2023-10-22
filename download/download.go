@@ -130,7 +130,10 @@ func DownloadX(url string, savepath string, numWorkers int) error {
 		wg.Add(1)
 		go func(start, end int) {
 			defer wg.Done()
-			_download(start, end, file, bar, url)
+			err := _download(start, end, file, bar, url)
+			if err != nil {
+				log.Println(err)
+			}
 		}(start, end)
 
 		start = end + 1
@@ -141,19 +144,17 @@ func DownloadX(url string, savepath string, numWorkers int) error {
 	return nil
 }
 
-func _download(start, end int, file *os.File, bar *progressbar.ProgressBar, url string) {
+func _download(start, end int, file *os.File, bar *progressbar.ProgressBar, url string) error {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Println(err)
-		return
+		return err
 	}
 	req.Header.Set("User-Agent", UserAgent)
 	req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", start, end))
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Println(err)
-		return
+		return err
 	}
 	defer resp.Body.Close()
 
@@ -162,7 +163,7 @@ func _download(start, end int, file *os.File, bar *progressbar.ProgressBar, url 
 		n, err := resp.Body.Read(buf)
 		if err != nil {
 			if err != io.EOF {
-				log.Println(err)
+				return err
 			}
 			break
 		}
@@ -171,4 +172,5 @@ func _download(start, end int, file *os.File, bar *progressbar.ProgressBar, url 
 		bar.Add(n)
 		start += n
 	}
+	return nil
 }
